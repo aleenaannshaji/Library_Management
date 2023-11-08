@@ -340,21 +340,18 @@ def book_list(request):
     return render(request, 'book_list.html', {'books': books})
 
 
-def book_details(request, accno):
-    book = Book.objects.get(accno=accno)
-    penalty = book.calculate_penalty()
-
+def set_book_status(request, accno):
     if request.method == 'POST':
-        # Handle actions related to the book, e.g., marking as returned, approval, etc.
-        # You can implement these actions based on your requirements.
-        pass
+        book = get_object_or_404(Book, accno=accno)
+        book_status = request.POST.get('book_status')
 
-    return render(request, 'book_details.html', {'book': book, 'penalty': penalty})
+        if book_status == 'active':
+            book.activate()
+        elif book_status == 'inactive':
+            book.deactivate()
 
-
-def borrowed_books(request):
-    # Retrieve borrowed books for the user (staff/student)
-    return render(request, 'borrowed_books.html', {'borrowed_books': borrowed_books})
+    # Redirect back to the search page with the updated status
+    return redirect('search_books')  # Replace 'search_books' with the actual URL pattern for searching books
 
 
 
@@ -369,6 +366,20 @@ def search_books(request):
         return render(request, 'search_book.html', context)
 
 
+
+
+# def book_details(request, accno):
+#     book = Book.objects.get(accno=accno)
+#     penalty = book.calculate_penalty()
+#
+#     if request.method == 'POST':
+#         # Handle actions related to the book, e.g., marking as returned, approval, etc.
+#         # You can implement these actions based on your requirements.
+#         pass
+#
+#     return render(request, 'book_details.html', {'book': book, 'penalty': penalty})
+
+
 def student_staff_search_books(request):
     if request.method == 'POST':
         search_term = request.POST.get('search_term')
@@ -379,19 +390,52 @@ def student_staff_search_books(request):
         return render(request, 'user_search_book.html')
 
 
-def set_book_status(request, accno):
+# def set_book_status(request, accno):
+#     if request.method == 'POST':
+#         book = get_object_or_404(Book, accno=accno)
+#         book_status = request.POST.get('book_status')
+#
+#         if book_status == 'active':
+#             book.active = True
+#         elif book_status == 'inactive':
+#             book.active = False
+#         book.save()
+#
+#     # Redirect back to the search page with the updated status
+#     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
+
+def request_book(request, accno):
+    book = get_object_or_404(Book, accno=accno)
+
     if request.method == 'POST':
-        book = get_object_or_404(Book, accno=accno)
-        book_status = request.POST.get('book_status')
+        user = request.user  # Replace with the actual way to get the user
+        staff_id = user.staff_id
+        student_id = user.student_id
 
-        if book_status == 'active':
-            book.active = True
-        elif book_status == 'inactive':
-            book.active = False
-        book.save()
+        if book.can_be_borrowed() and 'borrow' in request.POST:
+            # Handle the borrow request
+            BorrowRequest.objects.create(
+                accno=book,
+                student_id=student_id,
+                staff_id=staff_id,
+                book_title=book.title,
+                book_author=book.author
+            )
+            return redirect('borrow_requests')  # Create a view for listing borrow requests
 
-    # Redirect back to the search page with the updated status
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+        elif 'reserve' in request.POST:
+            # Handle the reservation request
+            BookReservation.objects.create(
+                accno=book,
+                student_id=student_id,
+                staff_id=staff_id,
+                book_title=book.title,
+                book_author=book.author
+            )
+            return redirect('reservation_requests')  # Create a view for listing reservation requests
+
+    return render(request, 'request_book.html', {'book': book})
 
 
 def borrow_book(request, accno):

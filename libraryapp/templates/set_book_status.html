@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Set Book Status</title>
+</head>
+<body>
+    <h1>Set Book Status</h1>
+    <form method="post">
+        {% csrf_token %}
+        <input type="radio" name="book_status" value="active" id="active" checked>
+        <label for="active">Active</label>
+        <br>
+        <input type="radio" name="book_status" value="inactive" id="inactive">
+        <label for="inactive">Inactive</label>
+        <br>
+        <input type="submit" value="Save">
+    </form>
+</body>
+</html>

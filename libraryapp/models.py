@@ -264,6 +264,14 @@ class Book(models.Model):
     total_copies = models.PositiveIntegerField(default=0)
     active = models.BooleanField(default=True)
 
+    def activate(self):
+        self.active = True
+        self.save()
+
+    def deactivate(self):
+        self.active = False
+        self.save()
+
     def save(self, *args, **kwargs):
         if not self.accno:
             last_book = Book.objects.order_by('-accno').first()
