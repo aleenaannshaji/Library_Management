@@ -2,6 +2,27 @@
 <html>
 <head>
     <title>Student Registration</title>
+    <script>
+        function validateEmail(input) {
+            var emailRegex = /^[\w.-]+@(mca|intmca|cs)\.ajce\.in$/;
+            var isValid = emailRegex.test(input.value);
+
+            if (!isValid) {
+                alert('Email should be in the format @mca.ajce.in, @intmca.ajce.in, or @cs.ajce.in');
+                input.value = '';
+            }
+        }
+
+        function validateName(input) {
+            var nameRegex = /^[A-Z][a-zA-Z]*$/;
+            var isValid = nameRegex.test(input.value);
+
+            if (!isValid) {
+                alert('Name should start with a capital letter and contain only letters.');
+                input.value = '';
+            }
+        }
+    </script>
 </head>
 <body>
     <h3>Student Registration</h3><br><br>
@@ -9,10 +30,10 @@
         {% csrf_token %}
 
         <label for="name">Student Username:</label>
-        <input type="text" id="name" name="name" required><br><br>
+        <input type="text" id="name" name="name" required oninput="validateName(this)"><br><br>
 
         <label for="email">Student Email:</label>
-        <input type="email" id="email" name="email" required style="margin-left : 34px;"><br><br>
+        <input type="email" id="email" name="email" required style="margin-left : 34px;" oninput="validateEmail(this)"><br><br>
 
 
         <button type="submit">Create</button>

@@ -97,7 +97,10 @@ header {
                 <li><a href="add_des/" id="add_designation"><i class="fas-chart-bar"></i> Add Designation</a></li>
                 <li><a href="search_members/" id="search_members"><i class="fas-chart-bar"></i> Members List</a></li>
                 <li><a href="add_book/" id="add_book"><i class="fas fa-users"></i> Add Book</a></li>
+                <li><a href="book_list/" id="book_list"><i class="fas fa-users"></i> Book List</a></li>
                 <li><a href="search_book/" id="search_book"><i class="fas fa-users"></i> Search Books</a></li>
+                <li><a href="#" id="borrow-request-link"><i class="fas fa-users"></i> Borrow Requests</a></li>
+                <li><a href="#" id="Reservation-request-link"><i class="fas fa-users"></i> Reservation Requests</a></li>
                 <li><a href="#" id="periodicals-details-link"><i class="fas fa-users"></i> Periodicals Details</a></li>
                 <li><a href="#" id="lending-link"><i class="fas fa-users"></i> Lending</a></li>
                 <li><a href="#" id="due-details-link"><i class="fas fa-users"></i> Due Details</a></li>
@@ -162,6 +165,11 @@ header {
             loadContent('add_book/', 'dashboard-content');
         });
 
+        document.getElementById('book_list').addEventListener('click', function(event) {
+            event.preventDefault();
+            loadContent('book_list/', 'dashboard-content');
+        });
+
         document.getElementById('search_book').addEventListener('click', function(event) {
             event.preventDefault();
             loadContent('search_book/', 'dashboard-content');
@@ -172,6 +180,15 @@ header {
             loadContent('search_members/', 'dashboard-content');
         });
 
+        document.getElementById('borrow_requests').addEventListener('click', function(event) {
+            event.preventDefault();
+            loadContent('#', 'dashboard-content');
+        });
+
+        document.getElementById('reservation_requests').addEventListener('click', function(event) {
+            event.preventDefault();
+            loadContent('#', 'dashboard-content');
+        });
 
     </script>
 </body>

@@ -27,6 +27,7 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset/done/', auth_views.PasswordResetCompleteView.as_view(), name='password_reset_complete'),
 
+    path('adminpage/search_members/', views.search_members, name='search_members'),
     path('adminpage/add_book/', views.add_book, name='add_book'),
     path('adminpage/book_list/', views.book_list, name='book_list'),
     path('set_book_status/<str:accno>/', views.set_book_status, name='set_book_status'),
@@ -37,7 +38,6 @@ urlpatterns = [
     path('borrowed_books/', views.borrowed_books, name='borrowed_books'),
 
 
-    path('adminpage/search_members/', views.search_members, name='search_members'),
     path('borrow/<str:accno>/', views.borrow_book, name='borrow_book'),
     path('borrow-requests/', views.borrow_requests, name='borrow_requests'),
     path('approve-borrow-request/<int:request_id>/', views.approve_borrow_request, name='approve_borrow_request'),

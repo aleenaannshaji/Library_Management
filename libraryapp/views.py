@@ -346,13 +346,22 @@ def set_book_status(request, accno):
         book_status = request.POST.get('book_status')
 
         if book_status == 'active':
-            book.activate()
+            if book.active and book.can_be_borrowed():
+                # If the book is active and has available copies, redirect to borrow view
+                return redirect('borrow_book', accno=accno)
+            elif book.active and book.can_be_reserved():
+                # If the book is active but doesn't have available copies, redirect to reserve view
+                return redirect('reserve_book', accno=accno)
+            else:
+                # If the book is inactive, activate it
+                book.activate()
         elif book_status == 'inactive':
-            book.deactivate()
+            # If the book is active, deactivate it
+            if book.active:
+                book.deactivate()
 
-    # Redirect back to the search page with the updated status
-    return redirect('search_books')  # Replace 'search_books' with the actual URL pattern for searching books
-
+    # Redirect back to the book list page with the updated status
+    return redirect('book_list')
 
 
 def search_books(request):
