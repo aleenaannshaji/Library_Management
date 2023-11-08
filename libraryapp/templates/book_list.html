@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Book List</title>
+</head>
+<body>
+    <h1>List of Books</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Accession Number</th>
+                <th>Call Number</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Year of Published</th>
+                <th>ISBN</th>
+                <th>Publisher</th>
+                <th>Pages</th>
+                <th>Type of Book</th>
+                <th>Available Copies</th>
+                <th>Total Copies</th>
+                <th>Active</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+            <tr>
+                <td>{{ book.accno }}</td>
+                <td>{{ book.callno }}</td>
+                <td>{{ book.title }}</td>
+                <td>{{ book.author }}</td>
+                <td>{{ book.year_of_published }}</td>
+                <td>{{ book.isbn }}</td>
+                <td>{{ book.publisher }}</td>
+                <td>{{ book.pages }}</td>
+                <td>{{ book.type_of_book }}</td>
+                <td>{{ book.available_copies }}</td>
+                <td>{{ book.total_copies }}</td>
+                <td>{{ book.active }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

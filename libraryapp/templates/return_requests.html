@@ -1,0 +1,31 @@
+
+{% block content %}
+    <h1>Return Requests</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Book Title</th>
+                <th>Borrower</th>
+                <th>Return Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in pending_return_requests %}
+                <tr>
+                    <td>{{ request.borrowed_book.book.title }}</td>
+                    <td>{{ request.borrowed_book.borrower.email }}</td>
+                    <td>{{ request.return_date }}</td>
+                    <td>
+                        <a href="{% url 'approve_return_request' request.id %}">Approve</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4">No pending return requests</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

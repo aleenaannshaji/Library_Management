@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+
+    <style>
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh; /* Adjust this as needed to center vertically */
+        }
+
+        .login-card
+        {
+            width: 400px;
+            margin: 100px;
+            padding: 50px;
+            border: 1px solid #ccc;
+            border-radius: 30px;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            text-align: center;
+        }
+
+        /* Style the heading */
+        .login-card h2
+        {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        label
+        {
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"], input[type="password"]
+        {
+            width: 64%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button[type="submit"]
+        {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        /* Style error messages (you can customize this further) */
+        .error-message
+        {
+            color: #ff0000;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+
+
+        /* Style for invalid inputs */
+        .invalid
+        {
+            border: 2px solid red;
+        }
+    </style>
+    <script>
+        function validateEmail(email)
+        {
+            const adminPattern = /^admin@amaljyothi\.ac\.in$/;
+            const studentPattern = /^[\w]+@(mca\.ajce\.in|intmca\.ajce\.in|cs\.ajce\.in)$/;
+            const staffPattern = /^[\w]+@amaljyothi\.ac\.in$/;
+
+            if (adminPattern.test(email))
+            {
+                return "admin";
+            }
+            else if (studentPattern.test(email))
+            {
+                return "student";
+            }
+            else if (staffPattern.test(email))
+            {
+                return "staff";
+            }
+            else
+            {
+                return "invalid";
+            }
+        }
+
+        function onEmailInput()
+        {
+            const email = document.getElementById("email").value;
+            const userType = validateEmail(email);
+            const emailField = document.getElementById("email");
+            const feedback = document.getElementById("email-feedback");
+
+            if (userType === "invalid")
+            {
+                emailField.classList.add("invalid");
+                feedback.textContent = "Invalid email format";
+            }
+            else
+            {
+                emailField.classList.remove("invalid");
+                feedback.textContent = "";
+            }
+        }
+
+    function login()
+    {
+        console.log("aleena")
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("pwd").value;
+        const userType = validateEmail(email);
+        console.log("userType",userType)
+
+        if (userType === "invalid")
+        {
+            alert("Invalid email format");
+        }
+        else
+        {
+            // Redirect the user to the corresponding page
+        switch (userType)
+        {
+            case "admin":
+                window.location.href = "{% url 'adminpage' %}";
+            break;
+            case "student":
+                window.location.href = "{% url 'student' %}";
+            break;
+            case "staff":
+                window.location.href = "{% url 'staff' %}";
+            break;
+        }
+        }
+    }
+
+    </script>
+</head>
+<body>
+<center>
+    <div class="login-card">
+        <h2>LOGIN PAGE</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" required oninput="onEmailInput()" style="margin-left: 35px; width: 71%"><br>
+        <span id="email-feedback" style="color: red;"></span><br>
+
+        <label for="pwd">Password:</label>
+        <input type="password" id="pwd" name="pwd" required style="margin-left: 7px; width: 70%"><br><br>
+
+
+        <p><a href="{% url 'password_reset' %}" class="link" style="text-decoration: none; color:#ff0000;">Forgot Password?</a></p>
+<!--        <a href="changepwd/" style="text-decoration: none; color:#ff0000;">Forgot Password?</a><br><br>-->
+
+        <button type="button" onclick="login()" style="width: 100px; height: 30px;">Login</button>
+    </form>
+    </div>
+    </center>
+</body>
+</html>

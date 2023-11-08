@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Designation List</title>
+</head>
+<body>
+    <h1>Designation List</h1>
+    <ul>
+        {% for designation in designations %}
+            <li>{{ designation.designation }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

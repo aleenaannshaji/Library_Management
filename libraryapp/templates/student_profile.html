@@ -1,0 +1,117 @@
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--<head>-->
+<!--    <title>Student Profile</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <h1>Student Profile</h1>-->
+<!--    <form method="post" enctype="multipart/form-data">-->
+<!--        {% csrf_token %}-->
+<!--        <label for="student_id">Student ID:</label>-->
+<!--        <input type="text" id="student_id" name="student_id" value="{{ student.student_id }}" readonly><br><br>-->
+
+<!--        <label for="student_name">Student Name:</label>-->
+<!--        <input type="text" id="student_name" name="student_name" value="{{ student.student_name }}"><br><br>-->
+
+<!--        <label for="dob">Date of Birth:</label>-->
+<!--        <input type="date" id="dob" name="dob" value="{{ student.dob }}" required><br><br>-->
+
+<!--        <label for="address">Address:</label>-->
+<!--        <input type="text" id="address" name="address" value="{{ student.address }}" required><br><br>-->
+
+<!--        <label for="phone_number">Phone Number:</label>-->
+<!--        <input type="text" id="phone_number" name="phone_number" value="{{ student.phone_number }}" required><br><br>-->
+
+<!--        <label for="p_id">Program:</label>-->
+<!--        <input type="text" id="p_id" name="p_id" value="{{ student.p_id.program }}"><br><br>-->
+
+<!--        <label for="d_id">Department:</label>-->
+<!--        <input type="text" id="d_id" name="d_id" value="{{ student.d_id.department }}"><br><br>-->
+
+<!--        <label for="email">Email:</label>-->
+<!--        <input type="email" id="email" name="email" value="{{ student.email }}" readonly><br><br>-->
+
+<!--        <label for="pwd">Password:</label>-->
+<!--        <input type="password" id="pwd" name="pwd"><br><br>-->
+
+<!--        <label for="pic">Profile Picture:</label>-->
+<!--        <input type="file" id="pic" name="pic"><br><br>-->
+
+<!--        <button type="submit">Save Changes</button>-->
+
+<!--    </form>-->
+<!--</body>-->
+<!--</html>-->
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Profile</title>
+    <script>
+        function validateDob(dob) {
+            const dobValue = new Date(dob.value);
+            const currentDate = new Date();
+            const minDate = new Date();
+            minDate.setFullYear(currentDate.getFullYear() - 26);
+            const maxDate = new Date();
+            maxDate.setFullYear(currentDate.getFullYear() - 18);
+
+            if (dobValue < minDate || dobValue > maxDate) {
+                dob.setCustomValidity("Your age must be between 18 and 26 years.");
+            } else {
+                dob.setCustomValidity("");
+            }
+        }
+
+        function validateImage(fileInput) {
+            const file = fileInput.files[0];
+            if (file) {
+                const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                if (!allowedTypes.includes(file.type)) {
+                    fileInput.setCustomValidity("Only image files (JPEG, PNG, GIF) are allowed.");
+                } else {
+                    fileInput.setCustomValidity("");
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Student Profile</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="student_id">Student ID:</label>
+        <input type="text" id="student_id" name="student_id" value="{{ student.student_id }}" readonly style="margin-left: 35px;"><br><br>
+        <label for="student_name">Student Name:</label>
+        <input type="text" id="student_name" name="student_name" value="{{ student.student_name }}" required oninput="validateStudentName(this)" style="margin-left: 13px;"><br><br>
+        <label for="dob">Date of Birth:</label>
+        <input type="date" id="dob" name="dob" value="{{ student.dob|date:'Y-m-d' }}" required oninput="validateDob(this)" style="margin-left: 20px;"><br><br>
+        <label for="address">Address:</label>
+        <textarea id="address" name="address" required style="margin-left: 52px;">{{ student.address }}</textarea><br><br>
+        <label for="phone_number">Phone Number:</label>
+        <input type="text" id="phone_number" name="phone_number" value="{{ student.phone_number }}" required oninput="validatePhoneNumber(this)" required style="margin-left: 8px;"><br><br>
+        <!-- Dropdown menu for selecting Program -->
+        <label for="p_id">Program:</label>
+        <select id="p_id" name="p_id" required style="margin-left: 49px;">
+            {% for program in programs %}
+                <option value="{{ program.p_id }}" {% if program.p_id == student.p_id_id %}selected{% endif %}>{{ program.program }}</option>
+            {% endfor %}
+        </select><br><br>
+        <!-- Dropdown menu for selecting Department -->
+        <label for="d_id">Department:</label>
+        <select id="d_id" name="d_id" required style="margin-left: 28px;">
+            {% for department in departments %}
+                <option value="{{ department.d_id }}" {% if department.d_id == student.d_id_id %}selected{% endif %}>{{ department.department }}</option>
+            {% endfor %}
+        </select><br><br>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="{{ student.email }}" readonly style="margin-left: 64px;"><br><br>
+        <label for="pwd">Password:</label>
+        <input type="password" id="pwd" name="pwd" placeholder="New Password" oninput="validatePassword(this)" style="margin-left: 40px;"><br><br>
+        <label for="pic">Photo:</label>
+        <input type="file" id="pic" name="pic" accept="image/*" onchange="validateImage(this)" style="margin-left: 63px;"><br><br>
+        <button type="submit">Update</button>
+    </form>
+</body>
+</html>

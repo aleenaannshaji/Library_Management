@@ -1,0 +1,147 @@
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--<head>-->
+<!--    <title>Member List</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--    <h3>Search Results</h3>-->
+
+<!--    <form method="post" action="{% url 'search_members' %}">-->
+<!--        {% csrf_token %}-->
+<!--        <label for="member_id">Search by Member ID:</label>-->
+<!--        <input type="text" id="member_id" name="member_id" required>-->
+<!--        <button type="submit">Search</button>-->
+<!--    </form>-->
+
+<!--    <h4>Students</h4>-->
+<!--    <table border="2">-->
+<!--        <tr>-->
+<!--            <th>Student ID</th>-->
+<!--            <th>Name</th>-->
+<!--            <th>Email</th>-->
+<!--            <th>Phone Number</th>-->
+<!--            <th>Program</th>-->
+<!--            <th>Department</th>-->
+<!--        </tr>-->
+<!--        {% if students %}-->
+<!--            {% for student in students %}-->
+<!--                <tr>-->
+<!--                    <td>{{ student.student_id }}</td>-->
+<!--                    <td>{{ student.student_name }}</td>-->
+<!--                    <td>{{ student.email }}</td>-->
+<!--                    <td>{{ student.phone_number }}</td>-->
+<!--                    <td>{{ student.p_id.program }}</td>-->
+<!--                    <td>{{ student.d_id.department }}</td>-->
+<!--                </tr>-->
+<!--            {% endfor %}-->
+<!--        {% else %}-->
+<!--            <tr>-->
+<!--                <td colspan="6">No matching students found.</td>-->
+<!--            </tr>-->
+<!--        {% endif %}-->
+<!--    </table>-->
+
+<!--    <h4>Staff Members</h4>-->
+<!--    <table border="2">-->
+<!--        <tr>-->
+<!--            <th>Staff ID</th>-->
+<!--            <th>Name</th>-->
+<!--            <th>Email</th>-->
+<!--            <th>Phone Number</th>-->
+<!--            <th>Department</th>-->
+<!--            <th>Designation</th>-->
+<!--        </tr>-->
+<!--        {% if staff %}-->
+<!--            {% for staff_member in staff %}-->
+<!--                <tr>-->
+<!--                    <td>{{ staff_member.staff_id }}</td>-->
+<!--                    <td>{{ staff_member.staff_name }}</td>-->
+<!--                    <td>{{ staff_member.email }}</td>-->
+<!--                    <td>{{ staff_member.phone_number }}</td>-->
+<!--                    <td>{{ staff_member.d_id.department }}</td>-->
+<!--                    <td>{{ staff_member.des_id.designation }}</td>-->
+<!--                </tr>-->
+<!--            {% endfor %}-->
+<!--        {% else %}-->
+<!--            <tr>-->
+<!--                <td colspan="6">No matching staff members found.</td>-->
+<!--            </tr>-->
+<!--        {% endif %}-->
+<!--    </table>-->
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Member List</title>
+</head>
+<body><br><br>
+    <h3>Search Members</h3><br><br>
+
+    <form method="post" action="{% url 'search_members' %}">
+        {% csrf_token %}
+        <label for="member_id">Search by Member ID:</label>
+        <input type="text" id="member_id" name="member_id" required>
+        <button type="submit">Search</button>
+    </form>
+
+    {% if search_performed %}
+    <h4>Students</h4>
+    <table border="2">
+        <tr>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+            <th>Program</th>
+            <th>Department</th>
+        </tr>
+        {% if students %}
+            {% for student in students %}
+                <tr>
+                    <td>{{ student.student_id }}</td>
+                    <td>{{ student.student_name }}</td>
+                    <td>{{ student.email }}</td>
+                    <td>{{ student.phone_number }}</td>
+                    <td>{{ student.p_id.program }}</td>
+                    <td>{{ student.d_id.department }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="6">No matching students found.</td>
+            </tr>
+        {% endif %}
+    </table>
+
+    <h4>Staff Members</h4>
+    <table border="2">
+        <tr>
+            <th>Staff ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone Number</th>
+            <th>Department</th>
+            <th>Designation</th>
+        </tr>
+        {% if staff %}
+            {% for staff_member in staff %}
+                <tr>
+                    <td>{{ staff_member.staff_id }}</td>
+                    <td>{{ staff_member.staff_name }}</td>
+                    <td>{{ staff_member.email }}</td>
+                    <td>{{ staff_member.phone_number }}</td>
+                    <td>{{ staff_member.d_id.department }}</td>
+                    <td>{{ staff_member.des_id.designation }}</td>
+                </tr>
+            {% endfor %}
+        {% else %}
+            <tr>
+                <td colspan="6">No matching staff members found.</td>
+            </tr>
+        {% endif %}
+    </table>
+    {% endif %}
+</body>
+</html>

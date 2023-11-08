@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Program</title>
+
+</head>
+<body>
+    <h3>Add Program</h3><br><br>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <br><br><button type="submit" style="margin-left : 95px;">Add Program</button>
+    </form>
+
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search Books</title>
+    <script>
+    function validateAccNoTitle(input)
+    {
+    var regex = /^[A-Za-z0-9.\- ]*$/;
+    var isValid = regex.test(input.value);
+    if (!isValid)
+    {
+    alert('Access Number or Title can contain alphabets, digits, hyphen (-), and period (.) only.');
+    input.value = input.value.replace(/[^A-Za-z0-9.\- ]/g, '');
+    }
+    }
+</script>
+</head>
+<body><br><br>
+<h3>Search Books</h3><br><br>
+<form method="get" action="{% url 'search_books' %}">
+    <input type="text" name="query" placeholder="Search by accno or title" value="{{ request.GET.query }}" oninput="validateAccNoTitle(this)">
+    <button type="submit">Search</button>
+</form><br><br>
+<h3>Search Results</h3><br>
+<table border="2">
+    <thead>
+    <tr>
+        <th>Accno</th>
+        <th>Callno</th>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Available Copies</th>
+        <th>Total Copies</th>
+        <th>Active</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for book in books %}
+    <tr>
+        <td>{{ book.accno }}</td>
+        <td>{{ book.callno }}</td>
+        <td>{{ book.title }}</td>
+        <td>{{ book.author }}</td>
+        <td>{{ book.available_copies }}</td>
+        <td>{{ book.total_copies }}</td>
+        <td>
+        <form method="post" action="{% url 'set_book_status' book.accno %}">
+            {% csrf_token %}
+            <select name="book_status">
+                <option value="active" {% if book.active %}selected{% endif %}>Active</option>
+                <option value="inactive" {% if not book.active %}selected{% endif %}>Inactive</option>
+            </select>
+            <button type="submit">Set Status</button>
+        </form>
+    </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="6">No matching books found.</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,49 @@
+{% block content %}
+    <h1>Search Books</h1>
+
+    <form method="get" action="{% url 'user_search_book' %}">
+        <input type="text" name="query" placeholder="Search by accno or title" value="{{ request.GET.query }}">
+        <button type="submit">Search</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Accno</th>
+                <th>Callno</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Available Copies</th>
+                <th>Total Copies</th>
+                <th>Book Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for book in books %}
+                <tr>
+                    <td>{{ book.accno }}</td>
+                    <td>{{ book.callno }}</td>
+                    <td>{{ book.title }}</td>
+                    <td>{{ book.author }}</td>
+                    <td>{{ book.available_copies }}</td>
+                    <td>{{ book.total_copies }}</td>
+                    <td>
+                        {% if book.can_be_borrowed %}
+                            <a href="{% url 'borrow_request' book.accno %}">Borrow</a>
+                        {% else %}
+                            <button disabled>Borrow</button>
+                        {% endif %}
+                        {% if book.can_be_reserved %}
+                            <a href="{% url 'reserve_request' book.accno %}">Reserve</a>
+                        {% else %}
+                            <button disabled>Reserve</button>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="7">No matching books found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Staff Registration</title>
+</head>
+<body>
+    <h3>Staff Registration</h3><br><br>
+    <form method="post" action="{% url 'add_staff'%}">
+        {% csrf_token %}
+
+
+        <label for="name">Staff Username:</label>
+        <input type="text" id="name" name="name" required><br><br>
+
+        <label for="email">Staff Email:</label>
+        <input type="email" id="email" name="email" required style="margin-left : 34px;"><br><br>
+
+
+        <button type="submit">Create</button>
+
+</body>
+</html>
