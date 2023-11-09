@@ -2,24 +2,28 @@
 <html>
 <head>
     <title>Student Registration</title>
-    <script>
-        function validateEmail(input) {
+     <script>
+        function validateEmail(email) {
             var emailRegex = /^[\w.-]+@(mca|intmca|cs)\.ajce\.in$/;
-            var isValid = emailRegex.test(input.value);
+            var isValid = emailRegex.test(email.value);
 
             if (!isValid) {
                 alert('Email should be in the format @mca.ajce.in, @intmca.ajce.in, or @cs.ajce.in');
-                input.value = '';
+                email.setCustomValidity('Invalid email format');
+            } else {
+                email.setCustomValidity('');
             }
         }
 
-        function validateName(input) {
+        function validateName(name) {
             var nameRegex = /^[A-Z][a-zA-Z]*$/;
-            var isValid = nameRegex.test(input.value);
+            var isValid = nameRegex.test(name.value);
 
             if (!isValid) {
                 alert('Name should start with a capital letter and contain only letters.');
-                input.value = '';
+                name.setCustomValidity('Invalid name format');
+            } else {
+                name.setCustomValidity('');
             }
         }
     </script>

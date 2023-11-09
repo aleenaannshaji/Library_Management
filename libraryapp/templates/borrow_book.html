@@ -1,17 +1,20 @@
-<!-- cannot_borrow.html -->
+<!-- borrow_book.html -->
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Cannot Borrow Book</title>
+    <title>Borrow Book</title>
 </head>
 <body>
-    <h3>Cannot Borrow Book</h3>
+    <h3>Borrow Book</h3>
     <p>Book Details:</p>
     <p>Accno: {{ book.accno }}</p>
     <p>Callno: {{ book.callno }}</p>
     <p>Title: {{ book.title }}</p>
     <!-- Add other book details as needed -->
 
-    <p>Sorry, this book cannot be borrowed at the moment.</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit">Borrow</button>
+    </form>
 </body>
 </html>

@@ -98,7 +98,7 @@ header {
                 <li><a href="search_members/" id="search_members"><i class="fas-chart-bar"></i> Members List</a></li>
                 <li><a href="add_book/" id="add_book"><i class="fas fa-users"></i> Add Book</a></li>
                 <li><a href="book_list/" id="book_list"><i class="fas fa-users"></i> Book List</a></li>
-                <li><a href="search_book/" id="search_book"><i class="fas fa-users"></i> Search Books</a></li>
+                <li><a href="search_book/" id="search_books"><i class="fas fa-users"></i> Search Books</a></li>
                 <li><a href="#" id="borrow-request-link"><i class="fas fa-users"></i> Borrow Requests</a></li>
                 <li><a href="#" id="Reservation-request-link"><i class="fas fa-users"></i> Reservation Requests</a></li>
                 <li><a href="#" id="periodicals-details-link"><i class="fas fa-users"></i> Periodicals Details</a></li>
@@ -170,7 +170,7 @@ header {
             loadContent('book_list/', 'dashboard-content');
         });
 
-        document.getElementById('search_book').addEventListener('click', function(event) {
+        document.getElementById('search_books').addEventListener('click', function(event) {
             event.preventDefault();
             loadContent('search_book/', 'dashboard-content');
         });

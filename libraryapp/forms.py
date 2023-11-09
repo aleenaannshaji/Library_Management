@@ -1,5 +1,5 @@
 from django import forms
-from .models import Studentreg, Staffreg, Department, Designation, Program, Book, Holiday, BorrowedBook, BorrowRequest, Reservation, ReturnRequest
+from .models import Studentreg, Staffreg, Department, Designation, Program, Book, Holiday, BorrowedBook, BorrowRequest, BookReservation, ReturnRequest
 from .validators import validate_isbn, validate_year_of_published
 
 
@@ -111,10 +111,7 @@ class BorrowRequestForm(forms.ModelForm):
         model = BorrowRequest
         fields = '__all__'
 
-class ReservationForm(forms.ModelForm):
-    class Meta:
-        model = Reservation
-        fields = '__all__'
+
 
 class BorrowedBookForm(forms.ModelForm):
     class Meta:

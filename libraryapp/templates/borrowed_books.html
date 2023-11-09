@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Borrowed Books</title>
+</head>
+<body>
+    <h3>Borrowed Books</h3>
+    <table border="2">
+        <thead>
+            <tr>
+                <th>Accno</th>
+                <th>Callno</th>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Borrowed Date</th>
+                <th>Due Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for borrowed_book in borrowed_books %}
+            <tr>
+                <td>{{ borrowed_book.accno.accno }}</td>
+                <td>{{ borrowed_book.accno.callno }}</td>
+                <td>{{ borrowed_book.accno.title }}</td>
+                <td>{{ borrowed_book.accno.author }}</td>
+                <td>{{ borrowed_book.borrowed_date }}</td>
+                <td>{{ borrowed_book.due_date }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No borrowed books found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Studentreg, Staffreg, Department, Program, Designation, CustomUser, Book, BorrowRequest, BorrowedBook, ReturnRequest, BookReservation, Holiday,SearchBook
-from .forms import StudentRegistrationForm, StaffAdminRegistrationForm, DepartmentForm, LoginForm, ProgramForm, DesignationForm, StudentProfileForm, StaffUpdateForm, BookForm, SearchForm, BorrowRequestForm, ReservationForm, BorrowedBookForm, ReturnRequestForm
+from .forms import StudentRegistrationForm, StaffAdminRegistrationForm, DepartmentForm, LoginForm, ProgramForm, DesignationForm, StudentProfileForm, StaffUpdateForm, BookForm, SearchForm, BorrowRequestForm, BorrowedBookForm, ReturnRequestForm
 # from django.contrib.auth import login as auth_login, authenticate
 
 from django.contrib.auth import authenticate, login
@@ -282,58 +282,58 @@ def search_members(request):
 
 
 
-# def add_book(request):
-#     if request.method == 'POST':
-#         form = BookForm(request.POST)
-#         if form.is_valid():
-#             book = form.save()
-#             return redirect('book_list')  # Redirect to a page displaying the list of books
-#
-#     else:
-#         form = BookForm()
-#
-#     return render(request, 'add_book.html', {'form': form})
-
-
-
 def add_book(request):
     if request.method == 'POST':
-        # Handle form submission to create a new book
-        # Extract form data and save it to the Book model
-        accno = request.POST.get('accno')
-        callno = request.POST.get('callno')
-        title = request.POST.get('title')
-        author = request.POST.get('author')
-        year_of_published = request.POST.get('year_of_published')
-        isbn = request.POST.get('isbn')
-        publisher = request.POST.get('publisher')
-        pages = request.POST.get('pages')
-        type_of_book = request.POST.get('type_of_book')
-        available_copies = request.POST.get('available_copies')
-        total_copies = request.POST.get('total_copies')
-        active = request.POST.get('active')
+        form = BookForm(request.POST)
+        if form.is_valid():
+            book = form.save()
+            return redirect('book_list')  # Redirect to a page displaying the list of books
 
-        book = Book(
-            accno=accno,
-            callno=callno,
-            title=title,
-            author=author,
-            year_of_published=year_of_published,
-            isbn=isbn,
-            publisher=publisher,
-            pages=pages,
-            type_of_book=type_of_book,
-            available_copies=available_copies,
-            total_copies=total_copies,
-            active=active
-        )
-        book.save()
-
-        return redirect('book_list')  # Replace 'book_list' with the URL pattern for listing books
     else:
-        # Render the form to add a new book
-        return render(request, 'add_book.html')
+        form = BookForm()
 
+    return render(request, 'add_book.html', {'form': form})
+
+
+#
+# def add_book(request):
+#     if request.method == 'POST':
+#         # Handle form submission to create a new book
+#         # Extract form data and save it to the Book model
+#         accno = request.POST.get('accno')
+#         callno = request.POST.get('callno')
+#         title = request.POST.get('title')
+#         author = request.POST.get('author')
+#         year_of_published = request.POST.get('year_of_published')
+#         isbn = request.POST.get('isbn')
+#         publisher = request.POST.get('publisher')
+#         pages = request.POST.get('pages')
+#         type_of_book = request.POST.get('type_of_book')
+#         available_copies = request.POST.get('available_copies')
+#         total_copies = request.POST.get('total_copies')
+#         active = request.POST.get('active')
+#
+#         book = Book(
+#             accno=accno,
+#             callno=callno,
+#             title=title,
+#             author=author,
+#             year_of_published=year_of_published,
+#             isbn=isbn,
+#             publisher=publisher,
+#             pages=pages,
+#             type_of_book=type_of_book,
+#             available_copies=available_copies,
+#             total_copies=total_copies,
+#             active=active
+#         )
+#         book.save()
+#
+#         return redirect('book_list')  # Replace 'book_list' with the URL pattern for listing books
+#     else:
+#         # Render the form to add a new book
+#         return render(request, 'add_book.html')
+#
 
 def book_list(request):
     books = Book.objects.all()
@@ -413,83 +413,109 @@ def student_staff_search_books(request):
 #     # Redirect back to the search page with the updated status
 #     return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
+#09/11/2023
+# def request_book(request, accno):
+#     book = get_object_or_404(Book, accno=accno)
+#
+#     if request.method == 'POST':
+#         user = request.user  # Replace with the actual way to get the user
+#         staff_id = user.staff_id
+#         student_id = user.student_id
+#
+#         if book.can_be_borrowed() and 'borrow' in request.POST:
+#             # Handle the borrow request
+#             BorrowRequest.objects.create(
+#                 accno=book,
+#                 student_id=student_id,
+#                 staff_id=staff_id,
+#                 book_title=book.title,
+#                 book_author=book.author
+#             )
+#             return redirect('borrow_requests')  # Create a view for listing borrow requests
+#
+#         elif 'reserve' in request.POST:
+#             # Handle the reservation request
+#             BookReservation.objects.create(
+#                 accno=book,
+#                 student_id=student_id,
+#                 staff_id=staff_id,
+#                 book_title=book.title,
+#                 book_author=book.author
+#             )
+#             return redirect('reservation_requests')  # Create a view for listing reservation requests
+#
+#     return render(request, 'request_book.html', {'book': book})
 
-def request_book(request, accno):
-    book = get_object_or_404(Book, accno=accno)
-
+def borrow_request(request):
     if request.method == 'POST':
-        user = request.user  # Replace with the actual way to get the user
-        staff_id = user.staff_id
-        student_id = user.student_id
+        accno = request.POST.get('accno')  # Assuming you have a form field with name 'accno'
 
-        if book.can_be_borrowed() and 'borrow' in request.POST:
-            # Handle the borrow request
-            BorrowRequest.objects.create(
+        # Check if the book is available and active
+        book = Book.objects.get(accno=accno)
+        if book.can_be_borrowed():
+            # Create a borrow request
+            borrow_request = BorrowRequest.objects.create(
                 accno=book,
-                student_id=student_id,
-                staff_id=staff_id,
-                book_title=book.title,
-                book_author=book.author
+                student_id=request.user.student_id,  # Replace with the actual way to get student_id
+                staff_id=request.user.staff_id,  # Replace with the actual way to get staff_id
             )
-            return redirect('borrow_requests')  # Create a view for listing borrow requests
 
-        elif 'reserve' in request.POST:
-            # Handle the reservation request
-            BookReservation.objects.create(
-                accno=book,
-                student_id=student_id,
-                staff_id=staff_id,
-                book_title=book.title,
-                book_author=book.author
-            )
-            return redirect('reservation_requests')  # Create a view for listing reservation requests
+            # Redirect to the admin home page or a confirmation page
+            return redirect('adminpage')  # Replace with the actual URL pattern for admin home
 
-    return render(request, 'request_book.html', {'book': book})
+    # Handle GET request or invalid borrow request
+    return redirect('search_books')
 
-
+@login_required
 def borrow_book(request, accno):
     # Get the book object by accession number (accno)
     book = get_object_or_404(Book, accno=accno)
 
     if request.method == 'POST':
-        # Handle the book borrowing request
-        if book.can_be_borrowed():
-            # Check if the book can be borrowed (is active and not already borrowed)
+        if request.user.is_authenticated:
+            # Check if the user is authenticated (logged in)
+            if book.can_be_borrowed():
+                # Check if the book can be borrowed (is active and not already borrowed)
 
-            # Create a BorrowedBook entry
-            borrowed_book = BorrowedBook(
-                accno=book,
-                student_id=request.user.student_id,  # Replace with the actual way to get student_id
-                staff_id=request.user.staff_id,  # Replace with the actual way to get staff_id
-                borrowed_date=timezone.now(),
-                due_date=timezone.now() + timezone.timedelta(days=14),  # Set the due date to 14 days from now
-            )
-            borrowed_book.save()
+                # Create a BorrowedBook entry
+                borrowed_book = BorrowedBook(
+                    accno=book,
+                    student_id=request.user.student_id,  # Replace with the actual way to get student_id
+                    staff_id=request.user.staff_id,  # Replace with the actual way to get staff_id
+                    borrowed_date=timezone.now(),
+                    due_date=timezone.now() + timezone.timedelta(days=14),  # Set the due date to 14 days from now
+                )
+                borrowed_book.save()
 
-            # Update the book's available copies
-            book.available_copies -= 1
-            book.save()
-
-            # Check if there are pending reservations for this book and approve if possible
-            reservations = BookReservation.objects.filter(accno=book, approved=False)
-            if reservations.exists():
-                # Approve the first reservation (FIFO)
-                reservation = reservations.first()
-                reservation.approved = True
-                reservation.save()
                 # Update the book's available copies
                 book.available_copies -= 1
                 book.save()
 
-            return redirect('borrowed_books')  # Replace with the URL pattern for listing borrowed books
+                # Check if there are pending reservations for this book and approve if possible
+                reservations = BookReservation.objects.filter(accno=book, approved=False)
+                if reservations.exists():
+                    # Approve the first reservation (FIFO)
+                    reservation = reservations.first()
+                    reservation.approved = True
+                    reservation.save()
+                    # Update the book's available copies
+                    book.available_copies -= 1
+                    book.save()
+
+                return redirect('borrowed_books')  # Replace with the URL pattern for listing borrowed books
+            else:
+                # Book cannot be borrowed, handle accordingly (e.g., show a message)
+                return render(request, 'cannot_borrow.html', {'book': book})  # Create an HTML template for this message
         else:
-            # Book cannot be borrowed, handle accordingly (e.g., show a message)
-            return render(request, 'cannot_borrow.html', {'book': book})  # Create an HTML template for this message
+            messages.error(request, 'You must be logged in to borrow a book.')
+            return redirect('login')  # Replace with the URL pattern for your login page
 
     # Render the book borrowing form
     return render(request, 'borrow_book.html', {'book': book})
 
-#-------
+
+
+
 def borrow_requests(request):
     pending_requests = BorrowRequest.objects.filter(
         book__active=True,

@@ -94,7 +94,7 @@ header {
 
             <ul class="menu">
                 <li><a href="student_profile/" id="student_profile"><i class="fas fa-home"></i> Profile</a></li>
-                <li><a href="search_book/"  id="search_book"><i class="fas fa-chart-bar"></i> Search Book</a></li>
+                <li><a href="search_book/"  id="search_books"><i class="fas fa-chart-bar"></i> Search Book</a></li>
                 <li><a href="#"  id="borrow-details-link"><i class="fas fa-users"></i>Borrow Details</a></li>
                 <li><a href="#"  id="return-link"><i class="fas fa-users"></i>Return</a></li>
                 <li><a href="#"  id="due-details-link"><i class="fas fa-users"></i>Due Details</a></li>
@@ -133,7 +133,7 @@ header {
             loadContent('student_profile/', 'dashboard-content');
         });
 
-        document.getElementById('search_book').addEventListener('click', function(event) {
+        document.getElementById('search_books').addEventListener('click', function(event) {
             event.preventDefault();
             loadContent('search_book/', 'dashboard-content');
 

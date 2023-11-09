@@ -236,17 +236,14 @@ class Holiday(models.Model):
 
 from django.db.models import F
 
+
 class Book(models.Model):
     accno = models.CharField(max_length=6, primary_key=True, unique=True, editable=False)
-    callno = models.CharField(max_length=15, unique=True, validators=[
-        RegexValidator(r'^[A-Za-z0-9\-,\s]+$', message="Call number should contain letters, digits, '-', and ','.")
-    ])
-    title = models.CharField(max_length=100)
-    author = models.CharField(max_length=100)
-    year_of_published = models.PositiveIntegerField(
-        validators=[MinValueValidator(1995), MaxValueValidator(2023)]
-    )
-    isbn = models.CharField(max_length=12, unique=True, validators=[validate_isbn])
+    callno = models.CharField(max_length=20,unique=True, validators=[RegexValidator(r'^[A-Za-z0-9\-\s]+$')])
+    title = models.CharField(max_length=50)
+    author = models.CharField(max_length=50)
+    year_of_published = models.PositiveIntegerField(validators=[validate_year_of_published])
+    isbn = models.CharField(max_length=12, validators=[validate_isbn],unique=True)
     publisher = models.CharField(max_length=50)
     pages = models.PositiveIntegerField()
 
@@ -276,11 +273,15 @@ class Book(models.Model):
         if not self.accno:
             last_book = Book.objects.order_by('-accno').first()
             if last_book:
-                last_accno = int(last_book.accno[3:])
-                self.accno = f'acc{last_accno + 1:03d}'
+                last_accno = last_book.accno
+                accno_int = int(last_accno[3:]) + 1
+                self.accno = f'Acc{accno_int:03d}'
             else:
-                self.accno = 'acc001'
+                self.accno = 'Acc001'
         super(Book, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return f'{self.title} by {self.author}'
 
     def is_borrowed(self):
         return BorrowedBook.objects.filter(accno=self, returned=False).exists()
@@ -308,6 +309,79 @@ class Book(models.Model):
             return True
         return False
 
+
+# class Book(models.Model):
+#     accno = models.CharField(max_length=6, primary_key=True, unique=True, editable=False)
+#     callno = models.CharField(max_length=15, unique=True, validators=[
+#         RegexValidator(r'^[A-Za-z0-9\-,\s]+$', message="Call number should contain letters, digits, '-', and ','.")
+#     ])
+#     title = models.CharField(max_length=100)
+#     author = models.CharField(max_length=100)
+#     year_of_published = models.PositiveIntegerField(
+#         validators=[MinValueValidator(1995), MaxValueValidator(2023)]
+#     )
+#     isbn = models.CharField(max_length=12, unique=True, validators=[validate_isbn])
+#     publisher = models.CharField(max_length=50)
+#     pages = models.PositiveIntegerField()
+#
+#     BOOK_TYPES = (
+#         ('Fiction', 'Fiction'),
+#         ('Non-Fiction', 'Non-Fiction'),
+#         ('Science', 'Science'),
+#         ('Biography', 'Biography'),
+#         ('Computer Science', 'Computer Science'),
+#         # Add more types as needed
+#     )
+#
+#     type_of_book = models.CharField(max_length=20, choices=BOOK_TYPES)
+#     available_copies = models.PositiveIntegerField(default=0)
+#     total_copies = models.PositiveIntegerField(default=0)
+#     active = models.BooleanField(default=True)
+#
+#     def activate(self):
+#         self.active = True
+#         self.save()
+#
+#     def deactivate(self):
+#         self.active = False
+#         self.save()
+#
+#     def save(self, *args, **kwargs):
+#         if not self.accno:
+#             last_book = Book.objects.order_by('-accno').first()
+#             if last_book:
+#                 last_accno = int(last_book.accno[3:])
+#                 self.accno = f'acc{last_accno + 1:03d}'
+#             else:
+#                 self.accno = 'acc001'
+#         super(Book, self).save(*args, **kwargs)
+#
+#     def is_borrowed(self):
+#         return BorrowedBook.objects.filter(accno=self, returned=False).exists()
+#
+#     def is_reserved(self):
+#         return BookReservation.objects.filter(accno=self, approved=False).exists()
+#
+#     def can_be_borrowed(self):
+#         return self.active and not self.is_borrowed() and self.available_copies > 0
+#
+#     def can_be_reserved(self):
+#         return not self.is_borrowed() and not self.is_reserved() and self.available_copies > 0
+#
+#     def borrow_book(self):
+#         if self.can_be_borrowed():
+#             self.available_copies = F('available_copies') - 1
+#             self.save()
+#             return True
+#         return False
+#
+#     def return_book(self):
+#         if self.is_borrowed():
+#             self.available_copies = F('available_copies') + 1
+#             self.save()
+#             return True
+#         return False
+#
 
 class BorrowRequest(models.Model):
     accno = models.ForeignKey(Book, on_delete=models.CASCADE, blank=True, null=True)
@@ -360,44 +434,3 @@ class ReturnRequest(models.Model):
     staff_id = models.ForeignKey(Staffreg, on_delete=models.CASCADE, null=True, blank=True)
     return_date = models.DateField()
     approved = models.BooleanField(default=False)
-
-
-
-# class Book(models.Model):
-#     accno = models.CharField(max_length=6, primary_key=True, unique=True, editable=False)
-#     callno = models.CharField(max_length=20,unique=True, validators=[RegexValidator(r'^[A-Za-z0-9\-\s]+$')])
-#     title = models.CharField(max_length=50)
-#     author = models.CharField(max_length=50)
-#     year_of_published = models.PositiveIntegerField(validators=[validate_year_of_published])
-#     isbn = models.CharField(max_length=12, validators=[validate_isbn],unique=True)
-#     publisher = models.CharField(max_length=50)
-#     pages = models.PositiveIntegerField()
-#
-#     BOOK_TYPES = (
-#         ('Fiction', 'Fiction'),
-#         ('Non-Fiction', 'Non-Fiction'),
-#         ('Science', 'Science'),
-#         ('Biography', 'Biography'),
-#         ('Computer Science', 'Computer Science'),
-#         # Add more types as needed
-#     )
-#
-#     type_of_book = models.CharField(max_length=20, choices=BOOK_TYPES)
-#     available_copies = models.PositiveIntegerField()
-#     total_copies = models.PositiveIntegerField()
-#
-#
-#     def save(self, *args, **kwargs):
-#         if not self.accno:
-#             last_book = Book.objects.order_by('-accno').first()
-#             if last_book:
-#                 last_accno = last_book.accno
-#                 accno_int = int(last_accno[3:]) + 1
-#                 self.accno = f'Acc{accno_int:03d}'
-#             else:
-#                 self.accno = 'Acc001'
-#         super(Book, self).save(*args, **kwargs)
-#
-#     def __str__(self):
-#         return f'{self.title} by {self.author}'
-

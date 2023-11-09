@@ -1,40 +1,146 @@
+<!--<!DOCTYPE html>-->
+<!--<html>-->
+<!--<head>-->
+<!--    <title>Search Books</title>-->
+<!--</head>-->
+<!--<body><br><br>-->
+<!--<h3>Search Books</h3><br><br>-->
+<!--<form method="get" action="{% url 'search_books' %}">-->
+<!--    <input type="text" name="query" placeholder="Search by accno or title" value="{{ request.GET.query }}" oninput="validateAccNoTitle(this)">-->
+<!--    <button type="submit">Search</button>-->
+<!--</form><br><br>-->
+<!--<h3>Search Results</h3><br>-->
+<!--<table border="2">-->
+<!--    <thead>-->
+<!--    <tr>-->
+<!--        <th>Accno</th>-->
+<!--        <th>Callno</th>-->
+<!--        <th>Title</th>-->
+<!--        <th>Author</th>-->
+<!--        <th>Available Copies</th>-->
+<!--        <th>Total Copies</th>-->
+<!--        <th>Active</th>-->
+<!--        <th>Action</th>-->
+<!--    </tr>-->
+<!--    </thead>-->
+<!--    <tbody>-->
+<!--    {% for book in books %}-->
+<!--    <tr>-->
+<!--        <td>{{ book.accno }}</td>-->
+<!--        <td>{{ book.callno }}</td>-->
+<!--        <td>{{ book.title }}</td>-->
+<!--        <td>{{ book.author }}</td>-->
+<!--        <td>{{ book.available_copies }}</td>-->
+<!--        <td>{{ book.total_copies }}</td>-->
+<!--        <td>-->
+<!--            <form method="post" action="{% url 'set_book_status' book.accno %}">-->
+<!--                {% csrf_token %}-->
+<!--                <select name="book_status">-->
+<!--                    <option value="active" {% if book.active %}selected{% endif %}>Active</option>-->
+<!--                    <option value="inactive" {% if not book.active %}selected{% endif %}>Inactive</option>-->
+<!--                </select>-->
+<!--                <button type="submit">Set Status</button>-->
+<!--            </form>-->
+<!--        </td>-->
+<!--        <td>-->
+<!--            {% if book.active %}-->
+<!--                {% if book.can_be_borrowed %}-->
+<!--                    <form method="post" action="{% url 'borrow_book' book.accno %}">-->
+<!--                        {% csrf_token %}-->
+<!--                        <button type="submit">Borrow</button>-->
+<!--                    </form>-->
+<!--                {% elif book.can_be_reserved %}-->
+<!--                    <form method="post" action="{% url 'reserve_book' book.accno %}">-->
+<!--                        {% csrf_token %}-->
+<!--                        <button type="submit">Reserve</button>-->
+<!--                    </form>-->
+<!--                {% endif %}-->
+<!--            {% endif %}-->
+<!--        </td>-->
+<!--    </tr>-->
+<!--    {% empty %}-->
+<!--    <tr>-->
+<!--        <td colspan="8">No matching books found.</td>-->
+<!--    </tr>-->
+<!--    {% endfor %}-->
+<!--    </tbody>-->
+<!--</table>-->
+<!--</body>-->
+<!--</html>-->
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>Search Books</title>
-    <script>
-    function validateAccNoTitle(input)
-    {
-    var regex = /^[A-Za-z0-9.\- ]*$/;
-    var isValid = regex.test(input.value);
-    if (!isValid)
-    {
-    alert('Access Number or Title can contain alphabets, digits, hyphen (-), and period (.) only.');
-    input.value = input.value.replace(/[^A-Za-z0-9.\- ]/g, '');
-    }
-    }
-</script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .search-card {
+            width: 50%;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-card {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
-<body><br><br>
-<h3>Search Books</h3><br><br>
-<form method="get" action="{% url 'search_books' %}">
-    <input type="text" name="query" placeholder="Search by accno or title" value="{{ request.GET.query }}" oninput="validateAccNoTitle(this)">
-    <button type="submit">Search</button>
-</form><br><br>
-<h3>Search Results</h3><br>
-<table border="2">
-    <thead>
-    <tr>
-        <th>Accno</th>
-        <th>Callno</th>
-        <th>Title</th>
-        <th>Author</th>
-        <th>Available Copies</th>
-        <th>Total Copies</th>
-        <th>Active</th>
-    </tr>
-    </thead>
-    <tbody>
+<body>
+    <div class="search-card">
+        <form method="get" action="{% url 'search_books' %}">
+            <input type="text" name="query" placeholder="Search by accno or title" value="{{ request.GET.query }}" oninput="validateAccNoTitle(this)">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <div class="results-card">
+        <h3>Search Results</h3>
+        <table border="2">
+            <thead>
+                <tr>
+                    <th>Accno</th>
+                    <th>Callno</th>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Available Copies</th>
+                    <th>Total Copies</th>
+                    <th>Active</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
     {% for book in books %}
     <tr>
         <td>{{ book.accno }}</td>
@@ -44,22 +150,38 @@
         <td>{{ book.available_copies }}</td>
         <td>{{ book.total_copies }}</td>
         <td>
-        <form method="post" action="{% url 'set_book_status' book.accno %}">
-            {% csrf_token %}
-            <select name="book_status">
-                <option value="active" {% if book.active %}selected{% endif %}>Active</option>
-                <option value="inactive" {% if not book.active %}selected{% endif %}>Inactive</option>
-            </select>
-            <button type="submit">Set Status</button>
-        </form>
-    </td>
+            <form method="post" action="{% url 'set_book_status' book.accno %}">
+                {% csrf_token %}
+                <select name="book_status">
+                    <option value="active" {% if book.active %}selected{% endif %}>Active</option>
+                    <option value="inactive" {% if not book.active %}selected{% endif %}>Inactive</option>
+                </select>
+                <button type="submit">Set Status</button>
+            </form>
+        </td>
+        <td>
+            {% if book.active %}
+                {% if book.can_be_borrowed %}
+                    <form method="post" action="{% url 'borrow_book' book.accno %}">
+                        {% csrf_token %}
+                        <button type="submit">Borrow</button>
+                    </form>
+                {% elif book.can_be_reserved %}
+                    <form method="post" action="{% url 'reserve_book' book.accno %}">
+                        {% csrf_token %}
+                        <button type="submit">Reserve</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+        </td>
     </tr>
     {% empty %}
     <tr>
-        <td colspan="6">No matching books found.</td>
+        <td colspan="8">No matching books found.</td>
     </tr>
     {% endfor %}
     </tbody>
 </table>
+    </div>
 </body>
 </html>

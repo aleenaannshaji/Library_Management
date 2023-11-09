@@ -1,158 +1,51 @@
-
-<!--<!DOCTYPE html>-->
-<!--<html>-->
-<!--<head>-->
-<!--    <title>Add Book</title>-->
-<!--    <script>-->
-<!--        function validateCallno(callno) {-->
-<!--            var regex = /^[A-Za-z0-9.\- ]*$/;-->
-<!--            var isValid = regex.test(callno.value);-->
-<!--            if (!isValid) {-->
-<!--                alert('Callno can contain alphabets, digits, hyphen (-), and period (.) only.');-->
-<!--                callno.value = callno.value.replace(/[^A-Za-z0-9.\- ]/g, '');-->
-<!--            }-->
-<!--        }-->
-
-<!--        function validateTitle(title) {-->
-<!--            var regex = /^[A-Z][a-zA-Z ]*$/;-->
-<!--            var isValid = regex.test(title.value);-->
-<!--            if (!isValid) {-->
-<!--                alert('Title should start with a capital letter and contain only letters and spaces.');-->
-<!--                title.value = title.value.replace(/[^A-Za-z ]/g, '');-->
-<!--            }-->
-<!--        }-->
-
-<!--        function validateAuthor(author) {-->
-<!--            var regex = /^[A-Z][a-zA-Z ]*$/;-->
-<!--            var isValid = regex.test(author.value);-->
-<!--            if (!isValid) {-->
-<!--                alert('Author name should start with a capital letter and contain only letters and spaces.');-->
-<!--                author.value = author.value.replace(/[^A-Za-z ]/g, '');-->
-<!--            }-->
-<!--        }-->
-
-<!--        function validateYear(input) {-->
-<!--            var year = parseInt(input.value);-->
-<!--            if (year < 1990 || year > new Date().getFullYear()) {-->
-<!--                alert('Year of publication must be between 1990 and the current year.');-->
-<!--                input.value = '';-->
-<!--            }-->
-<!--        }-->
-
-<!--        function validateISBN(isbn) {-->
-<!--            var regex = /^[0-9]{12}$/;-->
-<!--            var isValid = regex.test(isbn.value);-->
-<!--            if (!isValid) {-->
-<!--                alert('ISBN must be a 12-digit number.');-->
-<!--                isbn.value = isbn.value.replace(/[^0-9]/g, '');-->
-<!--            }-->
-<!--        }-->
-
-<!--        function validatePublisher(publisher) {-->
-<!--            var regex = /^[A-Z][a-zA-Z ]*$/;-->
-<!--            var isValid = regex.test(publisher.value);-->
-<!--            if (!isValid) {-->
-<!--                alert('Publisher name should start with a capital letter and contain only letters and spaces.');-->
-<!--                publisher.value = publisher.value.replace(/[^A-Za-z ]/g, '');-->
-<!--            }-->
-<!--        }-->
-
-<!--        function validatePages(pages) {-->
-<!--            var regex = /^[0-9]+$/;-->
-<!--            var isValid = regex test(pages.value);-->
-<!--            if (!isValid) {-->
-<!--                alert('Pages should only contain numbers.');-->
-<!--                pages.value = pages.value.replace(/[^0-9]/g, '');-->
-<!--            }-->
-<!--        }-->
-<!--    </script>-->
-<!--</head>-->
-<!--<body><br><br>-->
-<!--    <h3>Add a Book</h3><br>-->
-<!--    <form method="post">-->
-<!--        {% csrf_token %}-->
-<!--        {{ form.callno.label_tag }} {{ form.callno }}-->
-<!--        {{ form.title.label_tag }} {{ form.title }}-->
-<!--        {{ form.author.label_tag }} {{ form.author }}-->
-<!--        <label for="year_of_published">Year of Published</label>-->
-<!--        <select id="year_of_published" name="year_of_published" oninput="validateYear(this)">-->
-<!--            <option value="" selected disabled>Select a year</option>-->
-<!--            {% for year in years %}-->
-<!--                <option value="{{ year }}">{{ year }}</option>-->
-<!--            {% endfor %}-->
-<!--        </select>-->
-<!--        {{ form.isbn.label_tag }} {{ form.isbn }}-->
-<!--        {{ form.publisher.label_tag }} {{ form.publisher }}-->
-<!--        {{ form.pages.label_tag }} {{ form.pages }}-->
-<!--        {{ form.type_of_book.label_tag }} {{ form.type_of_book }}-->
-<!--        <button type="submit">Add Book</button>-->
-<!--    </form>-->
-
-<!--    <script>-->
-<!--        var yearSelect = document.getElementById('year_of_published');-->
-<!--        var currentYear = new Date().getFullYear();-->
-<!--        var startYear = 1990;-->
-<!--        for (var year = startYear; year <= currentYear; year++) {-->
-<!--            var option = document.createElement('option');-->
-<!--            option.value = year;-->
-<!--            option.text = year;-->
-<!--            yearSelect.appendChild(option);-->
-<!--        }-->
-<!--    </script>-->
-<!--</body>-->
-<!--</html>-->
-
 <!DOCTYPE html>
 <html>
 <head>
     <title>Add Book</title>
 </head>
-<body>
-    <h1>Add a New Book</h1>
+<body><br><br>
+    <h3>Add a New Book</h3><br>
     <form method="post">
         {% csrf_token %}
-        <label for="accno">Accession Number:</label>
-        <input type="text" id="accno" name="accno" required><br>
-
         <label for="callno">Call Number:</label>
-        <input type="text" id="callno" name="callno" required><br>
+        <input type="text" id="callno" name="callno" required style="margin-left : 75px;"><br><br>
 
         <label for="title">Title:</label>
-        <input type="text" id="title"  name="title" required><br>
+        <input type="text" id="title"  name="title" required style="margin-left : 134px;"><br><br>
 
         <label for="author">Author:</label>
-        <input type="text" id="author"  name="author" required><br>
+        <input type="text" id="author"  name="author" required style="margin-left : 117px;"><br><br>
 
         <label for="year_of_published">Year of Published:</label>
-        <input type="number" id="year_of_published"  name="year_of_published" required><br>
+        <input type="number" id="year_of_published"  name="year_of_published" required min="1997" max="2023" style="margin-left : 39px;"><br><br>
 
         <label for="isbn">ISBN:</label>
-        <input type="text" id="isbn" name="isbn" required><br>
+        <input type="text" id="isbn" name="isbn" required style="margin-left : 127px;"><br><br>
 
         <label for="publisher">Publisher:</label>
-        <input type="text" id="publisher" name="publisher" required><br>
+        <input type="text" id="publisher" name="publisher" required style="margin-left : 97px;"><br><br>
 
-        <label for="pages">Number of Pages:</label>
-        <input type="number" id="pages" name="pages" required><br>
+        <label for="pages">Pages:</label>
+        <input type="number" id="pages" name="pages" required style="margin-left : 116px;"><br><br>
 
         <label for="type_of_book">Type of Book:</label>
-        <select  id="type_of_book" name="type_of_book">
+        <select  id="type_of_book" name="type_of_book" style="margin-left : 70px;">
             <option value="Fiction">Fiction</option>
             <option value="Non-Fiction">Non-Fiction</option>
             <option value="Science">Science</option>
             <option value="Biography">Biography</option>
             <option value="Computer Science">Computer Science</option>
             <!-- Add more options as needed -->
-        </select><br>
+        </select><br><br>
 
         <label for="available_copies">Available Copies:</label>
-        <input type="number" id="available_copies" name="available_copies" required><br>
+        <input type="number" id="available_copies" name="available_copies" required style="margin-left : 45px;"><br><br>
 
         <label for="total_copies">Total Copies:</label>
-        <input type="number" id="total_copies" name="total_copies" required><br>
+        <input type="number" id="total_copies" name="total_copies" required style="margin-left : 76px;"><br><br>
 
         <label for="active">Active:</label>
-        <input type="checkbox"  id="active" name="active"><br>
+        <input type="checkbox"  id="active" name="active" style="margin-left : 120px;"><br><br>
 
         <button type="submit">Add Book</button>
     </form>
