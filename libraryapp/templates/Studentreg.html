@@ -1,46 +1,63 @@
+
 <!DOCTYPE html>
 <html>
 <head>
     <title>Student Registration</title>
-     <script>
-        function validateEmail(email) {
-            var emailRegex = /^[\w.-]+@(mca|intmca|cs)\.ajce\.in$/;
-            var isValid = emailRegex.test(email.value);
-
-            if (!isValid) {
-                alert('Email should be in the format @mca.ajce.in, @intmca.ajce.in, or @cs.ajce.in');
-                email.setCustomValidity('Invalid email format');
-            } else {
-                email.setCustomValidity('');
-            }
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
         }
 
-        function validateName(name) {
-            var nameRegex = /^[A-Z][a-zA-Z]*$/;
-            var isValid = nameRegex.test(name.value);
-
-            if (!isValid) {
-                alert('Name should start with a capital letter and contain only letters.');
-                name.setCustomValidity('Invalid name format');
-            } else {
-                name.setCustomValidity('');
-            }
+        .form-container {
+            background-color: #fff;
+            border-radius: 20px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            width: 450px;
+            margin: 100px auto;
         }
-    </script>
+
+        input[type="text"],
+        input[type="email"],
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
 </head>
 <body>
-    <h3>Student Registration</h3><br><br>
-    <form method="post" action="{% url 'add_student'%}">
-        {% csrf_token %}
+    <div class="form-container">
+        <center><h2>Student Registration</h2></center><br><br>
+        <form method="post" action="{% url 'add_student'%}">
+            {% csrf_token %}
+            <label for="name">Student Username:</label>
+            <input type="text" id="name" name="name" required><br><br>
+            <label for="email">Student Email:</label>
+            <input type="email" id="email" name="email" required style="margin-left : 0px;"><br><br>
+            <button type="submit" onclick="showConfirmation()">Create</button>
+        </form>
+    </div>
 
-        <label for="name">Student Username:</label>
-        <input type="text" id="name" name="name" required oninput="validateName(this)"><br><br>
-
-        <label for="email">Student Email:</label>
-        <input type="email" id="email" name="email" required style="margin-left : 34px;" oninput="validateEmail(this)"><br><br>
-
-
-        <button type="submit">Create</button>
-    </form>
+    <script>
+        function showConfirmation() {
+            alert('Student registered successfully!');
+        }
+    </script>
 </body>
 </html>

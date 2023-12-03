@@ -9,76 +9,78 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from .validators import YourAgeValidator, validate_isbn, validate_year_of_published
 from django.utils import timezone
 
+from django.contrib.auth.models import User
+
 
 # Custom User Manager for Admin
-class CustomUserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError('The Email field must be set')
-        # Normalize the email
-        email = self.normalize_email(email)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
+# class CustomUserManager(BaseUserManager):
+#     def create_user(self, email, password=None, **extra_fields):
+#         if not email:
+#             raise ValueError('The Email field must be set')
+#         # Normalize the email
+#         email = self.normalize_email(email)
+#         user = self.model(email=email, **extra_fields)
+#         user.set_password(password)
+#         user.save(using=self._db)
+#         return user
+#
+#     def create_superuser(self, email, password=None, **extra_fields):
+#         extra_fields.setdefault('is_admin', True)
+#         return self.create_user(email, password, **extra_fields)
 
-    def create_superuser(self, email, password=None, **extra_fields):
-        extra_fields.setdefault('is_admin', True)
-        return self.create_user(email, password, **extra_fields)
-
-# Custom User Manager for Staff
-class StaffUserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError('The Email field must be set')
-        # Normalize the email
-        email = self.normalize_email(email)
-        extra_fields.setdefault('is_staff', True)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self.db)
-        return user
-
-# Custom User Manager for Student
-class StudentUserManager(BaseUserManager):
-    def create_user(self, email, password=None, **extra_fields):
-        if not email:
-            raise ValueError('The Email field must be set')
-        email = self.normalize_email(email)
-        extra_fields.setdefault('is_student', True)
-        user = self.model(email=email, **extra_fields)
-        user.set_password(password)
-        user.save(using=self.db)
-        return user
-
-
-# ... Other imports and model definitions ...
-
-class CustomUser(AbstractBaseUser):
-    email = models.EmailField(unique=True)
-    is_active = models.BooleanField(default=True)
-    is_admin = models.BooleanField(default=False)
-    is_staff = models.BooleanField(default=False)
-    is_student = models.BooleanField(default=False)
-
-    # Add other custom fields for email format
-    d_id = models.ForeignKey('Department', on_delete=models.SET_NULL, blank=True, null=True)
-    p_id = models.ForeignKey('Program', on_delete=models.SET_NULL, blank=True, null=True)
-    des_id = models.ForeignKey('Designation', on_delete=models.SET_NULL, blank=True, null=True)
-
-    objects = CustomUserManager()  # Corrected this line
-
-    # Add other methods as needed
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
-
-    def __str__(self):
-        return self.email
-
-    class Meta:
-        verbose_name = _('Custom User')
-        verbose_name_plural = _('Custom Users')
+#  Custom User Manager for Staff
+# class StaffUserManager(BaseUserManager):
+#     def create_user(self, email, password=None, **extra_fields):
+#         if not email:
+#             raise ValueError('The Email field must be set')
+#         # Normalize the email
+#         email = self.normalize_email(email)
+#         extra_fields.setdefault('is_staff', True)
+#         user = self.model(email=email, **extra_fields)
+#         user.set_password(password)
+#         user.save(using=self.db)
+#         return user
+#
+ # Custom User Manager for Student
+# class StudentUserManager(BaseUserManager):
+#     def create_user(self, email, password=None, **extra_fields):
+#         if not email:
+#             raise ValueError('The Email field must be set')
+#         email = self.normalize_email(email)
+#         extra_fields.setdefault('is_student', True)
+#         user = self.model(email=email, **extra_fields)
+#         user.set_password(password)
+#         user.save(using=self.db)
+#         return user
+#
+#
+# # ... Other imports and model definitions ...
+#
+# class CustomUser(AbstractBaseUser):
+#     email = models.EmailField(unique=True)
+#     is_active = models.BooleanField(default=True)
+#     is_admin = models.BooleanField(default=False)
+#     is_staff = models.BooleanField(default=False)
+#     is_student = models.BooleanField(default=False)
+#
+#     # Add other custom fields for email format
+#     d_id = models.ForeignKey('Department', on_delete=models.SET_NULL, blank=True, null=True)
+#     p_id = models.ForeignKey('Program', on_delete=models.SET_NULL, blank=True, null=True)
+#     des_id = models.ForeignKey('Designation', on_delete=models.SET_NULL, blank=True, null=True)
+#
+#     objects = CustomUserManager()  # Corrected this line
+#
+#     # Add other methods as needed
+#
+#     USERNAME_FIELD = 'email'
+#     REQUIRED_FIELDS = []
+#
+#     def __str__(self):
+#         return self.email
+#
+#     class Meta:
+#         verbose_name = _('Custom User')
+#         verbose_name_plural = _('Custom Users')
 
 
 class Department(models.Model):
@@ -162,6 +164,7 @@ class Studentreg(models.Model):
         upload_to='images/',
         validators=[validate_image_extension],
     )
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='student')
 
     def save(self, *args, **kwargs):
         if not self.student_id:
@@ -389,6 +392,14 @@ class BorrowRequest(models.Model):
     staff_id = models.ForeignKey(Staffreg, on_delete=models.CASCADE, null=True, blank=True)
     request_date = models.DateTimeField(auto_now_add=True)
     approved = models.BooleanField(default=False)
+
+    def approve_request(self):
+        self.approved = True
+        self.save()
+
+    def reject_request(self):
+        self.approved = False
+        self.save()
 
 class BorrowedBook(models.Model):
     accno = models.ForeignKey(Book, on_delete=models.CASCADE, null=True, blank=True)

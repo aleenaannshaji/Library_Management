@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Borrow Requests</title>
+</head>
+<body>
+    <h3>Borrow Requests</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Book</th>
+                <th>Student ID</th>
+                <th>Staff ID</th>
+                <th>Request Date</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for request in borrow_requests %}
+            <tr>
+                <td>{{ request.accno }}</td>
+                <td>{{ request.student_id }}</td>
+                <td>{{ request.staff_id }}</td>
+                <td>{{ request.request_date }}</td>
+                <td>
+                    <form method="post" action="{% url 'approve_borrow_request' request.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Approve</button>
+                    </form>
+                    <form method="post" action="{% url 'reject_borrow_request' request.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Reject</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

@@ -6,7 +6,7 @@ from django.contrib.auth import views as auth_views
 urlpatterns = [
     path('', views.index, name="index"),
     #path('login/', CustomLoginView.as_view(), name='login'),
-    path('login/', views.login_view, name='login_view'),
+    path('login/', views.login, name='login'),
     path('adminpage/addstudent/', views.add_student, name="add_student"),
     path('adminpage/', views.adminhomepage, name="adminpage"),
     path('student/', views.student_homepage, name="student"),
@@ -20,7 +20,9 @@ urlpatterns = [
     path('program/', views.program_list, name='program_list'),
     path('department/', views.department_list, name='department_list'),
     path('designation/', views.designation_list, name='designation_list'),
-    path('student/student_profile/', views.student_profile, name='student_profile'),
+
+    path('student_profile/', views.student_profile, name='student_profile'),
+
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),
     # path('password_reset_email/', auth_views., name='password_reset_email'),
@@ -40,11 +42,17 @@ urlpatterns = [
 
 
     path('borrow/<str:accno>/', views.borrow_book, name='borrow_book'),
-    path('borrow-requests/', views.borrow_requests, name='borrow_requests'),
-    path('approve-borrow-request/<int:request_id>/', views.approve_borrow_request, name='approve_borrow_request'),
-    path('return/<str:accno>/', views.return_book, name='return_book'),
-    path('return_requests/', views.return_requests, name='return_requests'),
-    path('approve-return-request/<int:request_id>/', views.approve_return_request, name='approve_return_request'),
+    path('borrow-requests/', views.borrow_request_list, name='borrow_request_list'),
+
+    # URL patterns for approving and rejecting borrow requests
+    path('borrow-requests/approve/<int:request_id>/', views.approve_borrow_request, name='approve_borrow_request'),
+    path('borrow-requests/reject/<int:request_id>/', views.reject_borrow_request, name='reject_borrow_request'),
+
+    # path('borrow-requests/', views.borrow_requests, name='borrow_requests'),
+    # path('approve-borrow-request/<int:request_id>/', views.approve_borrow_request, name='approve_borrow_request'),
+    # path('return/<str:accno>/', views.return_book, name='return_book'),
+    # path('return_requests/', views.return_requests, name='return_requests'),
+    # path('approve-return-request/<int:request_id>/', views.approve_return_request, name='approve_return_request'),
     path('set_book_status/<str:accno>/', views.set_book_status, name='set_book_status'),
     path('student_staff_search_books/', views.student_staff_search_books, name='student_staff_search_books'),
 ]

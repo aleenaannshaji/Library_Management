@@ -1,10 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Studentreg, Staffreg, Department, Program, Designation, CustomUser, Book, BorrowRequest, BorrowedBook, ReturnRequest, BookReservation, Holiday,SearchBook
-from .forms import StudentRegistrationForm, StaffAdminRegistrationForm, DepartmentForm, LoginForm, ProgramForm, DesignationForm, StudentProfileForm, StaffUpdateForm, BookForm, SearchForm, BorrowRequestForm, BorrowedBookForm, ReturnRequestForm
-# from django.contrib.auth import login as auth_login, authenticate
-
-from django.contrib.auth import authenticate, login
-from django.contrib.auth import logout as auth_logout
+from .models import Studentreg, Staffreg, Department, Program, Designation, Book, BorrowRequest, BorrowedBook, ReturnRequest, BookReservation, Holiday,SearchBook
+from .forms import DepartmentForm, ProgramForm, DesignationForm, BookForm, SearchForm, BorrowRequestForm, BorrowedBookForm, ReturnRequestForm
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth.models import User
 from django.utils.crypto import get_random_string
 from django.core.mail import send_mail, EmailMessage
@@ -24,45 +21,34 @@ import string
 from django.db.models import Q
 
 
-# def login(request):
-#     if request.method == 'POST':
-#         email = request.POST.get('email')
-#         password = request.POST.get('pwd')
-#         user = authenticate(request, email=email, password=pwd)
-#         if user is not None:
-#             auth_login(request, user)
-#             request.session['email'] = email
-#             if user.is_admin:
-#                 return redirect('adminhomepage')
-#             elif user.is_staff:
-#                 return redirect('staff_homepage')
-#             elif user.is_student:
-#                 return redirect('student_homepage')
-#         else:
-#             messages.error(request, "Invalid login credentials")
-#
-#     response = render(request, 'login.html')
-#     response['Cache-Control'] = 'no-store, must-revalidate'
-#     return response
-
-def login_view(request):
+def login(request):
     if request.method == 'POST':
         email = request.POST.get('email')
-        password = request.POST.get('pwd')
-        user = authenticate(request, email=email, password=password)
-        if user is not None:
-            login(request, user)
-            request.session['email'] = email
-            if user.is_admin:
-                return redirect('adminhomepage')
-            elif user.is_staff:
-                return redirect('staff_homepage')
-            elif user.is_student:
-                return redirect('student_homepage')
+        password = request.POST.get('password')
+
+        # Check if a user with the entered email exists
+        try:
+            user = User.objects.get(email=email)
+        except User.DoesNotExist:
+            return render(request, 'login.html', {'error': 'Invalid email or password'})
+
+        # Authenticate the user
+        authenticated_user = authenticate(username=user.username, password=password)
+
+        if authenticated_user is not None:
+            auth_login(request, authenticated_user)
+            # Redirect to respective dashboard based on user type (student, staff, admin)
+            if authenticated_user.is_superuser:
+                return redirect('adminpage')
+            elif hasattr(authenticated_user, 'student'):
+                return redirect('student')
+            elif hasattr(authenticated_user, 'staff'):
+                return redirect('staff')
         else:
-            messages.error(request, "Invalid login credentials")
+            return render(request, 'login.html', {'error': 'Invalid email or password'})
 
     return render(request, 'login.html')
+
 
 def logout(request):
     auth_logout(request)
@@ -71,7 +57,6 @@ def logout(request):
 
 def index(request):
     return render(request, "index.html")
-
 
 
 def add_staff(request):
@@ -125,8 +110,12 @@ def add_student(request):
         # Generate a random password
         password = get_random_string(length=12)
 
+        # Create a new user (assuming using Django's built-in User model)
+        user = User.objects.create_user(username=name, email=email, password=password)
+
+
         # Create a new student with the generated password
-        student = Studentreg(student_name=name, email=email, pwd=password)
+        student = Studentreg(student_name=name, email=email, pwd=password, user=user)
         student.save()
 
         # Send the password to the student's email address
@@ -145,7 +134,6 @@ def add_student(request):
 
 
 
-@login_required
 def student_profile(request):
     if request.method == 'POST':
         form = StudentProfileForm(request.POST, request.FILES, instance=request.user)
@@ -157,7 +145,6 @@ def student_profile(request):
                 messages.error(request, 'Invalid data or email already exists')
     else:
         form = StudentProfileForm(instance=request.user)
-
     return render(request, 'student_profile.html', {'form': form})
 
 
@@ -446,129 +433,177 @@ def student_staff_search_books(request):
 #
 #     return render(request, 'request_book.html', {'book': book})
 
-def borrow_request(request):
-    if request.method == 'POST':
-        accno = request.POST.get('accno')  # Assuming you have a form field with name 'accno'
+# def borrow_request(request):
+#     if request.method == 'POST':
+#         accno = request.POST.get('accno')  # Assuming you have a form field with name 'accno'
+#
+#         # Check if the book is available and active
+#         book = Book.objects.get(accno=accno)
+#         if book.can_be_borrowed():
+#             # Create a borrow request
+#             borrow_request = BorrowRequest.objects.create(
+#                 accno=book,
+#                 student_id=request.user.student_id,  # Replace with the actual way to get student_id
+#                 staff_id=request.user.staff_id,  # Replace with the actual way to get staff_id
+#             )
+#
+#             # Redirect to the admin home page or a confirmation page
+#             return redirect('adminpage')  # Replace with the actual URL pattern for admin home
+#
+#     # Handle GET request or invalid borrow request
+#     return redirect('search_books')
 
-        # Check if the book is available and active
-        book = Book.objects.get(accno=accno)
-        if book.can_be_borrowed():
-            # Create a borrow request
-            borrow_request = BorrowRequest.objects.create(
-                accno=book,
-                student_id=request.user.student_id,  # Replace with the actual way to get student_id
-                staff_id=request.user.staff_id,  # Replace with the actual way to get staff_id
-            )
 
-            # Redirect to the admin home page or a confirmation page
-            return redirect('adminpage')  # Replace with the actual URL pattern for admin home
+#
+# def borrow_book(request, accno):
+#     # Get the book object by accession number (accno)
+#     book = get_object_or_404(Book, accno=accno)
+#
+#     if request.method == 'POST':
+#         if request.user.is_authenticated:
+#             # Check if the user is authenticated (logged in)
+#             if book.can_be_borrowed():
+#                 # Check if the book can be borrowed (is active and not already borrowed)
+#
+#                 # Create a BorrowedBook entry
+#                 borrowed_book = BorrowedBook(
+#                     accno=book,
+#                     student_id=request.user.student_id,  # Replace with the actual way to get student_id
+#                     staff_id=request.user.staff_id,  # Replace with the actual way to get staff_id
+#                     borrowed_date=timezone.now(),
+#                     due_date=timezone.now() + timezone.timedelta(days=14),  # Set the due date to 14 days from now
+#                 )
+#                 borrowed_book.save()
+#
+#                 # Update the book's available copies
+#                 book.available_copies -= 1
+#                 book.save()
+#
+#                 # Check if there are pending reservations for this book and approve if possible
+#                 reservations = BookReservation.objects.filter(accno=book, approved=False)
+#                 if reservations.exists():
+#                     # Approve the first reservation (FIFO)
+#                     reservation = reservations.first()
+#                     reservation.approved = True
+#                     reservation.save()
+#                     # Update the book's available copies
+#                     book.available_copies -= 1
+#                     book.save()
+#
+#                 return redirect('borrowed_books')  # Replace with the URL pattern for listing borrowed books
+#             else:
+#                 # Book cannot be borrowed, handle accordingly (e.g., show a message)
+#                 return render(request, 'cannot_borrow.html', {'book': book})  # Create an HTML template for this message
+#         else:
+#             messages.error(request, 'You must be logged in to borrow a book.')
+#             return redirect('login')  # Replace with the URL pattern for your login page
+#
+#     # Render the book borrowing form
+#     return render(request, 'borrow_book.html', {'book': book})
 
-    # Handle GET request or invalid borrow request
-    return redirect('search_books')
+
+
+# def borrow_requests(request):
+#     pending_requests = BorrowRequest.objects.filter(
+#         book__active=True,
+#         approved=False
+#     )
+#     return render(request, 'borrow_requests.html', {'pending_requests': pending_requests})
+#
+# @login_required
+# def approve_borrow_request(request, request_id):
+#     borrow_request = get_object_or_404(BorrowRequest, id=request_id)
+#     borrow_request.approved = True
+#     borrow_request.save()
+#     # Create a corresponding BorrowedBook entry
+#     borrowed_book = BorrowedBook(
+#         book=borrow_request.book,
+#         borrower=borrow_request.borrower,
+#         borrowed_date=timezone.now(),
+#         due_date=timezone.now() + timezone.timedelta(days=14)  # 14 days due date
+#     )
+#     borrowed_book.save()
+#     return redirect('borrow_requests')
+#
+# @login_required
+# def return_book(request, accno):
+#     book = get_object_or_404(Book, accno=accno)
+#     borrowed_book = BorrowedBook.objects.filter(
+#         book=book,
+#         borrower=request.user,
+#         returned=False
+#     ).first()
+#     if borrowed_book:
+#         # Create a ReturnRequest for the borrowed book
+#         return_request = ReturnRequest(borrowed_book=borrowed_book, return_date=timezone.now())
+#         return_request.save()
+#         return redirect('return_requests')
+#     else:
+#         # Handle the case when the book hasn't been borrowed
+#         pass
+#
+# @login_required
+# def return_requests(request):
+#     pending_return_requests = ReturnRequest.objects.filter(
+#         borrowed_book__book__active=True,
+#         approved=False
+#     )
+#     return render(request, 'return_requests.html', {'pending_return_requests': pending_return_requests})
+#
+# @login_required
+# def approve_return_request(request, request_id):
+#     return_request = get_object_or_404(ReturnRequest, id=request_id)
+#     return_request.approved = True
+#     return_request.save()
+#     borrowed_book = return_request.borrowed_book
+#     borrowed_book.returned = True
+#     borrowed_book.save()
+#     return redirect('return_requests')
+
+#---------------------22/11/2023-----------------------
+
+
+# def borrow_book(request, accno):
+#     if request.method == 'POST':
+#         book = Book.objects.get(accno=accno)
+#         if book.can_be_borrowed():
+#             # Fetch the Studentreg related to the logged-in user
+#             student_reg = get_object_or_404(Studentreg, student_id=request.user)
+#             BorrowRequest.objects.create(accno=book, student_id=student_reg)
+#             return redirect('borrow_request_success')
+#
+#     return redirect('search_books')
 
 @login_required
 def borrow_book(request, accno):
-    # Get the book object by accession number (accno)
-    book = get_object_or_404(Book, accno=accno)
-
     if request.method == 'POST':
         if request.user.is_authenticated:
-            # Check if the user is authenticated (logged in)
-            if book.can_be_borrowed():
-                # Check if the book can be borrowed (is active and not already borrowed)
-
-                # Create a BorrowedBook entry
-                borrowed_book = BorrowedBook(
-                    accno=book,
-                    student_id=request.user.student_id,  # Replace with the actual way to get student_id
-                    staff_id=request.user.staff_id,  # Replace with the actual way to get staff_id
-                    borrowed_date=timezone.now(),
-                    due_date=timezone.now() + timezone.timedelta(days=14),  # Set the due date to 14 days from now
-                )
-                borrowed_book.save()
-
-                # Update the book's available copies
-                book.available_copies -= 1
-                book.save()
-
-                # Check if there are pending reservations for this book and approve if possible
-                reservations = BookReservation.objects.filter(accno=book, approved=False)
-                if reservations.exists():
-                    # Approve the first reservation (FIFO)
-                    reservation = reservations.first()
-                    reservation.approved = True
-                    reservation.save()
-                    # Update the book's available copies
-                    book.available_copies -= 1
-                    book.save()
-
-                return redirect('borrowed_books')  # Replace with the URL pattern for listing borrowed books
-            else:
-                # Book cannot be borrowed, handle accordingly (e.g., show a message)
-                return render(request, 'cannot_borrow.html', {'book': book})  # Create an HTML template for this message
+            book = get_object_or_404(Book, accno=accno)
+            try:
+                student = Studentreg.objects.get(email=request.user.email)
+                BorrowRequest.objects.create(accno=book, student_id=student)
+                return redirect('borrow_request_success')  # Redirect to success page or appropriate URL
+            except Studentreg.DoesNotExist:
+                # Handle case where the logged-in user is not associated with a Studentreg
+                return redirect('book_list')  # Redirect back to book list or any appropriate URL
         else:
-            messages.error(request, 'You must be logged in to borrow a book.')
-            return redirect('login')  # Replace with the URL pattern for your login page
+            # Handle unauthenticated user trying to borrow
+            return redirect('login')  # Redirect to login page or any appropriate URL for login
+    return redirect('book_list')
 
-    # Render the book borrowing form
-    return render(request, 'borrow_book.html', {'book': book})
+def borrow_request_list(request):
+    # Fetch borrow requests (unapproved)
+    borrow_requests = BorrowRequest.objects.filter(approved=False)
 
+    context = {'borrow_requests': borrow_requests}
+    return render(request, 'borrow_request_list.html', context)
 
-
-
-def borrow_requests(request):
-    pending_requests = BorrowRequest.objects.filter(
-        book__active=True,
-        approved=False
-    )
-    return render(request, 'borrow_requests.html', {'pending_requests': pending_requests})
-
-@login_required
 def approve_borrow_request(request, request_id):
-    borrow_request = get_object_or_404(BorrowRequest, id=request_id)
-    borrow_request.approved = True
-    borrow_request.save()
-    # Create a corresponding BorrowedBook entry
-    borrowed_book = BorrowedBook(
-        book=borrow_request.book,
-        borrower=borrow_request.borrower,
-        borrowed_date=timezone.now(),
-        due_date=timezone.now() + timezone.timedelta(days=14)  # 14 days due date
-    )
-    borrowed_book.save()
-    return redirect('borrow_requests')
+    borrow_request = BorrowRequest.objects.get(pk=request_id)
+    borrow_request.approve_request()
+    return redirect('borrow_request_list')
 
-@login_required
-def return_book(request, accno):
-    book = get_object_or_404(Book, accno=accno)
-    borrowed_book = BorrowedBook.objects.filter(
-        book=book,
-        borrower=request.user,
-        returned=False
-    ).first()
-    if borrowed_book:
-        # Create a ReturnRequest for the borrowed book
-        return_request = ReturnRequest(borrowed_book=borrowed_book, return_date=timezone.now())
-        return_request.save()
-        return redirect('return_requests')
-    else:
-        # Handle the case when the book hasn't been borrowed
-        pass
-
-@login_required
-def return_requests(request):
-    pending_return_requests = ReturnRequest.objects.filter(
-        borrowed_book__book__active=True,
-        approved=False
-    )
-    return render(request, 'return_requests.html', {'pending_return_requests': pending_return_requests})
-
-@login_required
-def approve_return_request(request, request_id):
-    return_request = get_object_or_404(ReturnRequest, id=request_id)
-    return_request.approved = True
-    return_request.save()
-    borrowed_book = return_request.borrowed_book
-    borrowed_book.returned = True
-    borrowed_book.save()
-    return redirect('return_requests')
+def reject_borrow_request(request, request_id):
+    borrow_request = BorrowRequest.objects.get(pk=request_id)
+    borrow_request.reject_request()
+    return redirect('borrow_request_list')
