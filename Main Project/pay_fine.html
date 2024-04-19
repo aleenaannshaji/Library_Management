@@ -47,7 +47,7 @@
     <div class="container-card">
         <center><h2>PAY FINE</h2></center><br>
         <p>You have a fine of {{ borrowed_book.fine_amount }}.</p>
-        <p>{{borrowed_book.id}}</p>
+        
         <form method="POST" action="{% url 'pay_fine' borrowed_book.id %}" id="payment-form">
             {% csrf_token %}
             <input type="hidden" name="amount" value="{{ amount }}">
